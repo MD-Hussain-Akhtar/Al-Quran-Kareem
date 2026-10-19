@@ -159,8 +159,8 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
                   {/* Read Quran (Silent) */}
                   <button
                     onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                    className="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-medium text-[11px] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
-                    title="Read without listening / audio"
+                    className="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                    title="Read 30 Paras without listening / audio"
                   >
                     <BookMarked className="w-3.5 h-3.5" />
                     <span>صرف پڑھیں (Read)</span>

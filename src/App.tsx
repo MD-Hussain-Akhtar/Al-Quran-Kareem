@@ -11,6 +11,7 @@ import { AudioPlayerBar } from './components/AudioPlayerBar';
 import { TajweedGuideModal } from './components/TajweedGuideModal';
 import { KhatamTracker } from './components/KhatamTracker';
 import { BookmarksModal } from './components/BookmarksModal';
+import { InstallAppModal } from './components/InstallAppModal';
 import { fetchJuzData } from './services/quranApi';
 import { audioManager } from './services/audioService';
 import {
@@ -22,7 +23,8 @@ import {
   Award,
   ArrowRight,
   ShieldCheck,
-  Compass
+  Compass,
+  Download
 } from 'lucide-react';
 
 const LAST_READ_JUZ_KEY = 'quran_last_read_juz_v1';
@@ -79,6 +81,7 @@ export default function App() {
   const [isTajweedGuideOpen, setIsTajweedGuideOpen] = useState(false);
   const [isKhatamTrackerOpen, setIsKhatamTrackerOpen] = useState(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
 
   // Subscribe to audio player changes
   useEffect(() => {
@@ -201,8 +204,35 @@ export default function App() {
         onOpenTajweedGuide={() => setIsTajweedGuideOpen(true)}
         onOpenKhatamTracker={() => setIsKhatamTrackerOpen(true)}
         onOpenBookmarks={() => setIsBookmarksOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         bookmarkCount={bookmarks.length}
       />
+
+      {/* Prominent Download App Announcement Banner */}
+      <div className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 dark:from-emerald-950 dark:via-emerald-900 dark:to-emerald-950 text-emerald-950 dark:text-emerald-100 py-2 px-3 sm:px-6 border-b border-amber-500/40 dark:border-emerald-800 shadow-xs">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-800 dark:bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-900 dark:bg-emerald-300"></span>
+            </span>
+            <span className="font-bold">📱 Download App (ڈاؤنلوڈ ایپ):</span>
+            <span className="hidden sm:inline">
+              قرآن پاک ایپ کو اپنے موبائل پر انسٹال کریں اور بغیر انٹرنیٹ تمام 30 پارے تجوید کے ساتھ پڑھیں
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="px-3 py-1 rounded-md bg-emerald-950 hover:bg-emerald-900 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-transform active:scale-95"
+            >
+              <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Download App Now</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
@@ -238,20 +268,30 @@ export default function App() {
                   title="Read 30 Paras Quran without audio"
                 >
                   <BookMarked className="w-4 h-4 text-emerald-800" />
-                  <span>Read Quran (بغیر سنے صرف تلاوت)</span>
+                  <span>Read Quran (صرف تلاوت)</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
-                {/* 2. Listen & Read with audio */}
+                {/* 2. Download / Install App */}
+                <button
+                  onClick={() => setIsInstallModalOpen(true)}
+                  className="px-4 py-2.5 text-xs font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                  title="Download and install app on your phone"
+                >
+                  <Download className="w-4 h-4 text-emerald-950" />
+                  <span>Download App (ڈاؤنلوڈ ایپ)</span>
+                </button>
+
+                {/* 3. Listen & Read with audio */}
                 <button
                   onClick={() => handleSelectTab('reader')}
                   className="px-4 py-2.5 text-xs font-medium text-emerald-100 bg-emerald-800/80 hover:bg-emerald-700/80 border border-emerald-600/40 rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Volume2 className="w-4 h-4 text-amber-300" />
-                  <span>Listen Audio (آڈیو کے ساتھ سنیں)</span>
+                  <span>Listen Audio (سنیں)</span>
                 </button>
 
-                {/* 3. Tajweed Rules */}
+                {/* 4. Tajweed Rules */}
                 <button
                   onClick={() => setIsTajweedGuideOpen(true)}
                   className="px-3.5 py-2.5 text-xs font-medium text-emerald-200 hover:text-white transition-colors flex items-center gap-1.5"
@@ -359,6 +399,13 @@ export default function App() {
             <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 whitespace-nowrap block">
               Created by Hussain Akhter
             </span>
+            <button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline"
+            >
+              <Download className="w-3 h-3" />
+              <span>Install / Download</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -378,6 +425,15 @@ export default function App() {
             <span>·</span>
             <span>Created by <strong className="text-emerald-800 dark:text-emerald-400 font-semibold">Hussain Akhter</strong></span>
           </div>
+
+          <button
+            onClick={() => setIsInstallModalOpen(true)}
+            className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-400 font-semibold hover:underline"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download App (ڈاؤنلوڈ ایپ)</span>
+          </button>
+
           <span className="text-[11px] text-stone-400 font-arabic" dir="rtl">
             صَدَقَ اللّٰهُ الْعَظِيمُ وَبَلَّغَ رَسُولُهُ الْكَرِيمُ
           </span>
@@ -389,7 +445,24 @@ export default function App() {
         <AudioPlayerBar audioState={audioState} currentAyahs={ayahs} />
       )}
 
+      {/* Floating Download App Action Button (Always Accessible) */}
+      <button
+        onClick={() => setIsInstallModalOpen(true)}
+        className={`fixed right-4 sm:right-6 z-40 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-xl border-2 border-amber-500/50 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 ${
+          currentTab !== 'mushaf' ? 'bottom-20 sm:bottom-24' : 'bottom-6'
+        }`}
+        title="Download Al-Quran App on Mobile or Desktop"
+      >
+        <Download className="w-4 h-4 text-emerald-950 stroke-[2.5]" />
+        <span>Download App</span>
+      </button>
+
       {/* Modals */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
+
       <TajweedGuideModal
         isOpen={isTajweedGuideOpen}
         onClose={() => setIsTajweedGuideOpen(false)}

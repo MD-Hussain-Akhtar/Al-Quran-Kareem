@@ -122,6 +122,45 @@ export async function fetchJuzData(juzNumber: number): Promise<Ayah[]> {
   return generateSyntheticJuzFallback(juzNumber);
 }
 
+export function isJuzDownloaded(juzNumber: number): boolean {
+  try {
+    const cached = localStorage.getItem(`${CACHE_PREFIX}${juzNumber}`);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      return Array.isArray(parsed) && parsed.length > 5;
+    }
+  } catch {
+    // ignore
+  }
+  return juzNumber === 1 || juzNumber === 30;
+}
+
+export function getDownloadedParasCount(): number {
+  let count = 0;
+  for (let i = 1; i <= 30; i++) {
+    if (isJuzDownloaded(i)) count++;
+  }
+  return count;
+}
+
+export async function downloadAll30Paras(
+  onProgress?: (downloaded: number, total: number, currentPara: number) => void
+): Promise<boolean> {
+  for (let juz = 1; juz <= 30; juz++) {
+    try {
+      await fetchJuzData(juz);
+    } catch {
+      // continue downloading
+    }
+    if (onProgress) {
+      onProgress(juz, 30, juz);
+    }
+    // brief delay to avoid overwhelming the client
+    await new Promise((resolve) => setTimeout(resolve, 80));
+  }
+  return true;
+}
+
 export function stripTajweedTags(htmlWithTags: string): string {
   if (!htmlWithTags) return '';
   return htmlWithTags
