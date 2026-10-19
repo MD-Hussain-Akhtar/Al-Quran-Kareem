@@ -1,0 +1,8 @@
+{
+  "name": "Al-Quran Kareem by Hussain",
+  "description": "Read all 30 Paras (Juz) of the Holy Quran with color-coded Tajweed, audio recitation by master Qaris, and translations in Urdu, Hindi, and English.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
