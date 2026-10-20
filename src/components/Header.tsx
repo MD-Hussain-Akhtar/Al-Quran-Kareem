@@ -1,13 +1,14 @@
 import React from 'react';
-import { Sparkles, Bookmark, Award, BookOpen, Volume2, BookMarked, Download } from 'lucide-react';
+import { Sparkles, Bookmark, Award, Volume2, Download, Phone, Mail } from 'lucide-react';
 
 interface HeaderProps {
-  currentTab: 'paras' | 'surahs' | 'reader' | 'mushaf';
-  onSelectTab: (tab: 'paras' | 'surahs' | 'reader' | 'mushaf') => void;
+  currentTab: 'paras' | 'surahs' | 'reader';
+  onSelectTab: (tab: 'paras' | 'surahs' | 'reader') => void;
   onOpenTajweedGuide: () => void;
   onOpenKhatamTracker: () => void;
   onOpenBookmarks: () => void;
   onOpenInstallModal: () => void;
+  onScrollToContact?: () => void;
   bookmarkCount: number;
 }
 
@@ -18,12 +19,13 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenKhatamTracker,
   onOpenBookmarks,
   onOpenInstallModal,
+  onScrollToContact,
   bookmarkCount
 }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-850 shadow-2xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 lg:gap-6">
-        {/* Zone 1: App Icon & Brand Wordmark */}
+        {/* Zone 1: App Icon & Brand Wordmark with Creator Attribution */}
         <button
           onClick={() => onSelectTab('paras')}
           className="text-left flex items-center gap-2.5 sm:gap-3 shrink-0 hover:opacity-95 transition-opacity group"
@@ -54,30 +56,16 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         {/* Zone 2: Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-4 text-xs font-medium text-stone-600 dark:text-stone-400">
+        <nav className="hidden lg:flex items-center gap-5 text-xs font-medium text-stone-600 dark:text-stone-400">
           <button
             onClick={() => onSelectTab('paras')}
             className={`whitespace-nowrap shrink-0 transition-colors ${
               currentTab === 'paras'
                 ? 'text-emerald-800 dark:text-emerald-400 font-bold border-b-2 border-emerald-800 dark:border-emerald-400 py-1'
-                : 'hover:text-stone-900'
+                : 'hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
             30 Paras (پارے)
-          </button>
-
-          {/* Dedicated Silent Read Quran 30 Para Link */}
-          <button
-            onClick={() => onSelectTab('mushaf')}
-            className={`whitespace-nowrap shrink-0 transition-colors flex items-center gap-1.5 py-1 ${
-              currentTab === 'mushaf'
-                ? 'text-emerald-800 dark:text-emerald-400 font-bold border-b-2 border-emerald-800 dark:border-emerald-400'
-                : 'text-emerald-800 hover:text-emerald-900 dark:text-emerald-300 font-medium'
-            }`}
-            title="Read all 30 Paras without audio / listening"
-          >
-            <BookMarked className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
-            <span>Read Quran (صرف پڑھیں)</span>
           </button>
 
           <button
@@ -85,12 +73,12 @@ export const Header: React.FC<HeaderProps> = ({
             className={`whitespace-nowrap shrink-0 transition-colors flex items-center gap-1.5 py-1 ${
               currentTab === 'reader'
                 ? 'text-emerald-800 dark:text-emerald-400 font-bold border-b-2 border-emerald-800 dark:border-emerald-400'
-                : 'hover:text-stone-900'
+                : 'hover:text-stone-900 dark:hover:text-stone-100'
             }`}
-            title="Listen with Tajweed audio recitation"
+            title="Listen with Tajweed audio recitation & live highlight"
           >
-            <Volume2 className="w-3.5 h-3.5 text-stone-500" />
-            <span>Audio Tilawat (سنیں)</span>
+            <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>قرآن تلاوت (Audio & Highlight)</span>
           </button>
 
           <button
@@ -98,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`whitespace-nowrap shrink-0 transition-colors ${
               currentTab === 'surahs'
                 ? 'text-emerald-800 dark:text-emerald-400 font-bold border-b-2 border-emerald-800 dark:border-emerald-400 py-1'
-                : 'hover:text-stone-900'
+                : 'hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
             Surahs (سورتیں)
@@ -109,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="whitespace-nowrap shrink-0 transition-colors hover:text-emerald-800 dark:hover:text-emerald-400 flex items-center gap-1"
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Tajweed</span>
+            <span>تجوید قواعد</span>
           </button>
 
           <button
@@ -117,8 +105,19 @@ export const Header: React.FC<HeaderProps> = ({
             className="whitespace-nowrap shrink-0 transition-colors hover:text-emerald-800 dark:hover:text-emerald-400 flex items-center gap-1"
           >
             <Award className="w-3.5 h-3.5 text-amber-600" />
-            <span>Tracker</span>
+            <span>ختم قرآن ٹریکر</span>
           </button>
+
+          {onScrollToContact && (
+            <button
+              onClick={onScrollToContact}
+              className="whitespace-nowrap shrink-0 transition-colors hover:text-emerald-800 dark:hover:text-emerald-400 flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-semibold"
+              title="Contact Developer Hussain Akhter"
+            >
+              <Phone className="w-3 h-3 text-emerald-600" />
+              <span>Contact (رابطہ)</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenBookmarks}
@@ -134,30 +133,15 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </nav>
 
-        {/* Zone 3: Download Button & Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Prominent Download App Button (Visible on ALL devices) */}
+        {/* Zone 3: ONLY ONE Download App Button (Visible on all devices) */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={onOpenInstallModal}
-            className="px-2.5 sm:px-3.5 py-1.5 text-xs font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-transform active:scale-95 shadow-xs flex items-center gap-1.5 border border-amber-500/30"
+            className="px-3 sm:px-4 py-1.5 text-xs font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-transform active:scale-95 shadow-xs flex items-center gap-1.5 border border-amber-500/30"
             title="Download & Install App on your mobile phone or PC"
           >
             <Download className="w-3.5 h-3.5 text-emerald-950 stroke-[2.5]" />
             <span className="whitespace-nowrap">Download App</span>
-          </button>
-
-          {/* Primary Quick Button: Read Quran without audio */}
-          <button
-            onClick={() => onSelectTab('mushaf')}
-            className={`hidden md:flex px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-xs items-center gap-1.5 ${
-              currentTab === 'mushaf'
-                ? 'bg-emerald-900 text-white dark:bg-emerald-600'
-                : 'bg-emerald-800 hover:bg-emerald-900 text-white dark:bg-emerald-700'
-            }`}
-            title="Read 30 Paras without audio"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Read Quran (پڑھیں)</span>
           </button>
         </div>
       </div>
@@ -166,56 +150,66 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="lg:hidden flex items-center justify-around py-2 px-1 border-t border-stone-200 dark:border-stone-850 bg-stone-50 dark:bg-stone-950 text-xs">
         <button
           onClick={() => onSelectTab('paras')}
-          className={`px-2 py-1 rounded text-[11px] ${
+          className={`px-2.5 py-1 rounded text-xs font-medium ${
             currentTab === 'paras'
-              ? 'font-bold text-emerald-800 dark:text-emerald-400'
+              ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/60'
               : 'text-stone-600 dark:text-stone-400'
           }`}
         >
-          30 Paras
-        </button>
-
-        {/* Read Quran Mode (No Audio) */}
-        <button
-          onClick={() => onSelectTab('mushaf')}
-          className={`px-2 py-1 rounded text-[11px] flex items-center gap-1 ${
-            currentTab === 'mushaf'
-              ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/60'
-              : 'text-emerald-700 dark:text-emerald-400 font-semibold'
-          }`}
-          title="Read without listening / audio"
-        >
-          <BookMarked className="w-3 h-3" />
-          <span>Read Quran</span>
+          30 پارے
         </button>
 
         <button
           onClick={() => onSelectTab('reader')}
-          className={`px-2 py-1 rounded text-[11px] flex items-center gap-1 ${
+          className={`px-2.5 py-1 rounded text-xs flex items-center gap-1 font-medium ${
             currentTab === 'reader'
-              ? 'font-bold text-emerald-800 dark:text-emerald-400'
+              ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/60'
               : 'text-stone-600 dark:text-stone-400'
           }`}
         >
-          <Volume2 className="w-3 h-3" />
-          <span>Audio</span>
+          <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+          <span>تلاوت</span>
         </button>
 
-        {/* Mobile Download App trigger */}
         <button
-          onClick={onOpenInstallModal}
-          className="px-2 py-1 rounded text-[11px] text-emerald-950 font-bold flex items-center gap-1 bg-amber-400 hover:bg-amber-300 shadow-2xs"
+          onClick={() => onSelectTab('surahs')}
+          className={`px-2.5 py-1 rounded text-xs font-medium ${
+            currentTab === 'surahs'
+              ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/60'
+              : 'text-stone-600 dark:text-stone-400'
+          }`}
         >
-          <Download className="w-3 h-3 stroke-[2.5]" />
-          <span>Download</span>
+          سورتیں
         </button>
 
         <button
           onClick={onOpenTajweedGuide}
-          className="px-2 py-1 rounded text-[11px] text-stone-600 dark:text-stone-400 flex items-center gap-0.5"
+          className="px-2 py-1 rounded text-xs text-stone-600 dark:text-stone-400 flex items-center gap-1 font-medium"
         >
-          <Sparkles className="w-3 h-3 text-emerald-600" />
+          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
           <span>تجوید</span>
+        </button>
+
+        {onScrollToContact && (
+          <button
+            onClick={onScrollToContact}
+            className="px-2 py-1 rounded text-xs text-emerald-800 dark:text-emerald-400 font-semibold flex items-center gap-1"
+          >
+            <Phone className="w-3 h-3 text-emerald-600" />
+            <span>رابطہ</span>
+          </button>
+        )}
+
+        <button
+          onClick={onOpenBookmarks}
+          className="px-2 py-1 rounded text-xs text-stone-600 dark:text-stone-400 flex items-center gap-1 font-medium"
+        >
+          <Bookmark className="w-3.5 h-3.5 text-stone-500" />
+          {bookmarkCount > 0 && (
+            <span className="text-[10px] font-mono px-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 rounded-full">
+              {bookmarkCount}
+            </span>
+          )}
         </button>
       </div>
     </header>

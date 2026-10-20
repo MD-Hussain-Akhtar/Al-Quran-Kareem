@@ -6,8 +6,8 @@ import { Header } from './components/Header';
 import { JuzSelector } from './components/JuzSelector';
 import { SurahSelector } from './components/SurahSelector';
 import { QuranReader } from './components/QuranReader';
-import { MushafReader } from './components/MushafReader';
 import { AudioPlayerBar } from './components/AudioPlayerBar';
+import { FooterContact } from './components/FooterContact';
 import { TajweedGuideModal } from './components/TajweedGuideModal';
 import { KhatamTracker } from './components/KhatamTracker';
 import { BookmarksModal } from './components/BookmarksModal';
@@ -18,13 +18,13 @@ import {
   Sparkles,
   BookOpen,
   Volume2,
-  BookMarked,
   Bookmark as BookmarkIcon,
   Award,
   ArrowRight,
   ShieldCheck,
-  Compass,
-  Download
+  Mail,
+  Phone,
+  MessageSquare
 } from 'lucide-react';
 
 const LAST_READ_JUZ_KEY = 'quran_last_read_juz_v1';
@@ -44,7 +44,7 @@ const DEFAULT_SETTINGS: ReadingSettings = {
 };
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'paras' | 'surahs' | 'reader' | 'mushaf'>('paras');
+  const [currentTab, setCurrentTab] = useState<'paras' | 'surahs' | 'reader'>('paras');
   const [currentJuz, setCurrentJuz] = useState<number>(() => {
     try {
       const saved = localStorage.getItem(LAST_READ_JUZ_KEY);
@@ -136,27 +136,28 @@ export default function App() {
     loadJuz(currentJuz);
   }, [currentJuz, loadJuz]);
 
-  const handleSelectTab = (tab: 'paras' | 'surahs' | 'reader' | 'mushaf') => {
-    if (tab === 'mushaf') {
-      audioManager.pause();
-    }
+  const handleSelectTab = (tab: 'paras' | 'surahs' | 'reader') => {
     setCurrentTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSelectJuz = (juzNumber: number, targetMode: 'reader' | 'mushaf' = 'mushaf') => {
+  const handleSelectJuz = (juzNumber: number) => {
     setCurrentJuz(juzNumber);
-    if (targetMode === 'mushaf') {
-      audioManager.pause();
-    }
-    setCurrentTab(targetMode);
+    setCurrentTab('reader');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectSurah = (surah: SurahInfo) => {
     setCurrentJuz(surah.juzNumber);
-    setCurrentTab('mushaf');
+    setCurrentTab('reader');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleScrollToContact = () => {
+    const el = document.getElementById('contact-creator');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   };
 
   const handleToggleBookmark = (ayah: Ayah) => {
@@ -197,7 +198,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#fbfaf8] dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col font-sans-ui selection:bg-emerald-100 selection:text-emerald-900">
-      {/* Top Navigation */}
+      {/* Top Navigation - Contains the ONLY Download App button */}
       <Header
         currentTab={currentTab}
         onSelectTab={handleSelectTab}
@@ -205,34 +206,9 @@ export default function App() {
         onOpenKhatamTracker={() => setIsKhatamTrackerOpen(true)}
         onOpenBookmarks={() => setIsBookmarksOpen(true)}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
+        onScrollToContact={handleScrollToContact}
         bookmarkCount={bookmarks.length}
       />
-
-      {/* Prominent Download App Announcement Banner */}
-      <div className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 dark:from-emerald-950 dark:via-emerald-900 dark:to-emerald-950 text-emerald-950 dark:text-emerald-100 py-2 px-3 sm:px-6 border-b border-amber-500/40 dark:border-emerald-800 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-800 dark:bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-900 dark:bg-emerald-300"></span>
-            </span>
-            <span className="font-bold">📱 Download App (ڈاؤنلوڈ ایپ):</span>
-            <span className="hidden sm:inline">
-              قرآن پاک ایپ کو اپنے موبائل پر انسٹال کریں اور بغیر انٹرنیٹ تمام 30 پارے تجوید کے ساتھ پڑھیں
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsInstallModalOpen(true)}
-              className="px-3 py-1 rounded-md bg-emerald-950 hover:bg-emerald-900 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-transform active:scale-95"
-            >
-              <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>Download App Now</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
@@ -248,65 +224,46 @@ export default function App() {
               <div className="flex items-center gap-2 text-xs text-emerald-200">
                 <span className="font-arabic text-base">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
                 <span>·</span>
-                <span>30 Paras Quran Reader & Audio Tilawat</span>
+                <span>30 Paras Quran Tilawat & Live Recitation Tracker</span>
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
-                القرآن الكريم · پڑھیں، سنیں اور تجوید سیکھیں
+                القرآن الكريم · سنیں، پڑھیں اور تجوید سیکھیں
               </h1>
 
               <p className="text-sm text-emerald-100/90 leading-relaxed">
-                قرآنِ مجید کے تمام 30 پارے مکمل تجوید کے ساتھ پڑھیں — بغیر آڈیو کے پرسکون تلاوت یا مایہ ناز قراء کی تجوید آڈیو کے ساتھ۔
+                قرآنِ مجید کے تمام 30 پارے مکمل تجوید اور خوبصورت آڈیو کے ساتھ۔ جیسے جیسے آڈیو چلے گی، پڑھی جانے والی آیت لائیو ہائی لائٹ ہوگی تاکہ آپ باآسانی ساتھ ساتھ پڑھ سکیں۔
               </p>
 
               {/* Fast Action Buttons in Hero */}
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                {/* 1. Read Quran without listening */}
+                {/* 1. Open Quran Tilawat */}
                 <button
-                  onClick={() => handleSelectTab('mushaf')}
+                  onClick={() => handleSelectTab('reader')}
                   className="px-5 py-2.5 text-xs font-bold text-emerald-950 bg-white hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
-                  title="Read 30 Paras Quran without audio"
+                  title="Open Quran Reader with Audio & Live Highlight"
                 >
-                  <BookMarked className="w-4 h-4 text-emerald-800" />
-                  <span>Read Quran (صرف تلاوت)</span>
+                  <Volume2 className="w-4 h-4 text-emerald-800" />
+                  <span>تلاوت شروع کریں (پارہ {currentJuz})</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
-                {/* 2. Download / Install App */}
-                <button
-                  onClick={() => setIsInstallModalOpen(true)}
-                  className="px-4 py-2.5 text-xs font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
-                  title="Download and install app on your phone"
-                >
-                  <Download className="w-4 h-4 text-emerald-950" />
-                  <span>Download App (ڈاؤنلوڈ ایپ)</span>
-                </button>
-
-                {/* 3. Listen & Read with audio */}
-                <button
-                  onClick={() => handleSelectTab('reader')}
-                  className="px-4 py-2.5 text-xs font-medium text-emerald-100 bg-emerald-800/80 hover:bg-emerald-700/80 border border-emerald-600/40 rounded-lg transition-colors flex items-center gap-2"
-                >
-                  <Volume2 className="w-4 h-4 text-amber-300" />
-                  <span>Listen Audio (سنیں)</span>
-                </button>
-
-                {/* 4. Tajweed Rules */}
+                {/* 2. Tajweed Rules */}
                 <button
                   onClick={() => setIsTajweedGuideOpen(true)}
-                  className="px-3.5 py-2.5 text-xs font-medium text-emerald-200 hover:text-white transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2.5 text-xs font-medium text-emerald-100 bg-emerald-800/80 hover:bg-emerald-700/80 border border-emerald-600/40 rounded-lg transition-colors flex items-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                  <span>تجوید قواعد</span>
+                  <span>تجوید قواعد و رہنمائی</span>
                 </button>
               </div>
 
-              {/* Quick Trust / Feature Indicators & Creator Badge */}
+              {/* Trust Indicators & Creator Badge */}
               <div className="pt-3 border-t border-emerald-700/50 flex flex-wrap items-center justify-between gap-4 text-xs text-emerald-200">
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Pure Silent Reading Mode</span>
+                    <span>Real-time Recitation Highlight</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
@@ -314,12 +271,16 @@ export default function App() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Volume2 className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Sheikh Al-Husary Recitation</span>
+                    <span>Sheikh Mahmoud Al-Husary Recitation</span>
                   </div>
                 </div>
 
-                {/* Creator Attribution in Hero */}
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-white">
+                {/* Creator Attribution in Hero (Clickable to jump to contact) */}
+                <button
+                  onClick={handleScrollToContact}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-950 border border-emerald-500/30 text-white transition-colors"
+                  title="Click to view Contact details"
+                >
                   <img
                     src="/assets/aistudio/Gemini_Generated_Image_j8biewj8biewj8bi_ae784cb6.png"
                     alt="Created by Hussain Akhter"
@@ -328,7 +289,8 @@ export default function App() {
                   <span className="text-[11px] font-medium text-emerald-100">
                     Created by <strong className="font-semibold text-white">Hussain Akhter</strong>
                   </span>
-                </div>
+                  <span className="text-[10px] text-amber-300 ml-1">· Contact</span>
+                </button>
               </div>
             </div>
           </div>
@@ -346,23 +308,7 @@ export default function App() {
           <SurahSelector onSelectSurah={handleSelectSurah} />
         )}
 
-        {/* Pure Silent Mushaf Reading Mode (No Audio) */}
-        {currentTab === 'mushaf' && (
-          <MushafReader
-            currentJuz={currentJuz}
-            ayahs={ayahs}
-            isLoading={isLoadingAyahs}
-            bookmarks={bookmarks}
-            onToggleBookmark={handleToggleBookmark}
-            onSelectJuz={(num) => handleSelectJuz(num, 'mushaf')}
-            readingSettings={readingSettings}
-            onUpdateSettings={handleUpdateSettings}
-            onOpenTajweedGuide={() => setIsTajweedGuideOpen(true)}
-            onSwitchToAudio={() => handleSelectTab('reader')}
-          />
-        )}
-
-        {/* Audio Tilawat Mode (Listen & Read with Audio Sync) */}
+        {/* Quran Reader with Audio & Live Real-time Recitation Highlighting */}
         {currentTab === 'reader' && (
           <QuranReader
             currentJuz={currentJuz}
@@ -376,9 +322,13 @@ export default function App() {
             onOpenTajweedGuide={() => setIsTajweedGuideOpen(true)}
             readingSettings={readingSettings}
             onUpdateSettings={handleUpdateSettings}
-            onSwitchToSilentRead={() => handleSelectTab('mushaf')}
           />
         )}
+
+        {/* Dedicated Contact Creator Section at Bottom */}
+        <section id="contact-creator" className="pt-6">
+          <FooterContact />
+        </section>
       </main>
 
       {/* Floating Side Attribution Badge */}
@@ -386,38 +336,39 @@ export default function App() {
         aria-label="Creator credit"
         className="fixed right-0 top-1/2 -translate-y-1/2 z-20 hidden lg:block"
       >
-        <div className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-l-2 border-y border-emerald-600 dark:border-emerald-500 shadow-lg py-2.5 px-3 rounded-l-xl flex items-center gap-2.5 transition-all hover:translate-x-[-4px]">
+        <button
+          onClick={handleScrollToContact}
+          className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-l-2 border-y border-emerald-600 dark:border-emerald-500 shadow-lg py-2.5 px-3 rounded-l-xl flex items-center gap-2.5 transition-all hover:translate-x-[-4px] text-left group"
+          title="Click to contact creator Hussain Akhter"
+        >
           <img
             src="/assets/aistudio/Gemini_Generated_Image_j8biewj8biewj8bi_ae784cb6.png"
             alt="Hussain Akhter"
-            className="w-8 h-8 rounded-full object-cover border-2 border-emerald-600/50 shadow-xs shrink-0"
+            className="w-8 h-8 rounded-full object-cover border-2 border-emerald-600/50 shadow-xs shrink-0 group-hover:scale-105 transition-transform"
           />
-          <div className="text-left">
+          <div>
             <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium uppercase tracking-wider">
               Designed & Built
             </span>
             <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 whitespace-nowrap block">
               Created by Hussain Akhter
             </span>
-            <button
-              onClick={() => setIsInstallModalOpen(true)}
-              className="mt-1 flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline"
-            >
-              <Download className="w-3 h-3" />
-              <span>Install / Download</span>
-            </button>
+            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+              <Phone className="w-2.5 h-2.5" />
+              <span>Contact: 8210739639</span>
+            </span>
           </div>
-        </div>
+        </button>
       </aside>
 
       {/* Footer */}
-      <footer className="mt-auto py-6 border-t border-stone-200 dark:border-stone-850 text-center text-xs text-stone-500 pb-28">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="mt-auto py-6 border-t border-stone-200 dark:border-stone-850 text-center text-xs text-stone-500 pb-28 bg-white/50 dark:bg-stone-950/50">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img
               src="/assets/aistudio/Gemini_Generated_Image_j8biewj8biewj8bi_ae784cb6.png"
               alt="Hussain Akhter"
-              className="w-5 h-5 rounded-full object-cover"
+              className="w-6 h-6 rounded-full object-cover border border-emerald-600/40"
             />
             <span className="font-semibold text-stone-800 dark:text-stone-200">
               Al-Quran Kareem
@@ -426,13 +377,36 @@ export default function App() {
             <span>Created by <strong className="text-emerald-800 dark:text-emerald-400 font-semibold">Hussain Akhter</strong></span>
           </div>
 
-          <button
-            onClick={() => setIsInstallModalOpen(true)}
-            className="flex items-center gap-1.5 text-xs text-emerald-800 dark:text-emerald-400 font-semibold hover:underline"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download App (ڈاؤنلوڈ ایپ)</span>
-          </button>
+          {/* Quick Direct Contact Links in Footer */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-medium">
+            <a
+              href="mailto:mhussainakhter@gmail.com"
+              className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 hover:underline"
+              title="Send email to mhussainakhter@gmail.com"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>mhussainakhter@gmail.com</span>
+            </a>
+            <span className="text-stone-300 dark:text-stone-700">|</span>
+            <a
+              href="tel:8210739639"
+              className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-400 hover:underline"
+              title="Call 8210739639"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>+91 8210739639</span>
+            </a>
+            <span className="text-stone-300 dark:text-stone-700">|</span>
+            <a
+              href="https://wa.me/918210739639"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+            >
+              <MessageSquare className="w-3.5 h-3.5 fill-current" />
+              <span>WhatsApp</span>
+            </a>
+          </div>
 
           <span className="text-[11px] text-stone-400 font-arabic" dir="rtl">
             صَدَقَ اللّٰهُ الْعَظِيمُ وَبَلَّغَ رَسُولُهُ الْكَرِيمُ
@@ -440,22 +414,8 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Global Bottom Audio Player (Hidden in pure silent reading mode) */}
-      {currentTab !== 'mushaf' && (
-        <AudioPlayerBar audioState={audioState} currentAyahs={ayahs} />
-      )}
-
-      {/* Floating Download App Action Button (Always Accessible) */}
-      <button
-        onClick={() => setIsInstallModalOpen(true)}
-        className={`fixed right-4 sm:right-6 z-40 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-xl border-2 border-amber-500/50 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 ${
-          currentTab !== 'mushaf' ? 'bottom-20 sm:bottom-24' : 'bottom-6'
-        }`}
-        title="Download Al-Quran App on Mobile or Desktop"
-      >
-        <Download className="w-4 h-4 text-emerald-950 stroke-[2.5]" />
-        <span>Download App</span>
-      </button>
+      {/* Global Bottom Audio Player */}
+      <AudioPlayerBar audioState={audioState} currentAyahs={ayahs} />
 
       {/* Modals */}
       <InstallAppModal

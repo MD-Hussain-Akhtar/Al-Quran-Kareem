@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { JUZ_LIST } from '../data/juzData';
 import { JuzInfo } from '../types/quran';
-import { Search, BookOpen, Layers, CheckCircle2, ArrowRight, Volume2, BookMarked } from 'lucide-react';
+import { Search, BookOpen, Layers, CheckCircle2, ArrowRight, Volume2, Sparkles } from 'lucide-react';
 
 interface JuzSelectorProps {
   currentJuz: number;
-  onSelectJuz: (juzNumber: number, mode?: 'reader' | 'mushaf') => void;
+  onSelectJuz: (juzNumber: number) => void;
   completedParas?: number[];
 }
 
@@ -42,7 +42,7 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
             </span>
           </h2>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-            کسی بھی پارے کا انتخاب کریں: بغیر سنے صرف پڑھیں (Read Quran) یا تجوید آڈیو کے ساتھ سنیں
+            کسی بھی پارے کا انتخاب کریں — تلاوت سنیں اور ساتھ ساتھ لائیو ہائی لائٹ دیکھیں
           </p>
         </div>
 
@@ -55,40 +55,40 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
               placeholder="Search Para (1-30) / نام تلاش کریں..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-600 w-56 sm:w-64"
+              className="pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-850 rounded-lg text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-600 w-56 sm:w-64"
             />
           </div>
 
-          <div className="flex items-center p-0.5 bg-stone-100 dark:bg-stone-850 rounded-lg">
+          <div className="flex items-center bg-stone-100 dark:bg-stone-900 p-0.5 rounded-lg border border-stone-200 dark:border-stone-850">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded text-xs transition-colors ${
+              className={`p-1.5 rounded-md transition-colors ${
                 viewMode === 'grid'
-                  ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900'
+                  ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-2xs'
+                  : 'text-stone-500 hover:text-stone-700'
               }`}
               title="Grid View"
             >
-              <Layers className="w-4 h-4" />
+              <Layers className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded text-xs transition-colors ${
+              className={`p-1.5 rounded-md transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900'
+                  ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-2xs'
+                  : 'text-stone-500 hover:text-stone-700'
               }`}
               title="List View"
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grid View */}
+      {/* Grid or List Rendering */}
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredJuz.map((juz) => {
             const isSelected = currentJuz === juz.number;
             const isCompleted = completedParas.includes(juz.number);
@@ -96,85 +96,78 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
             return (
               <div
                 key={juz.number}
-                className={`group p-4 rounded-xl border transition-all relative overflow-hidden flex flex-col justify-between ${
+                onClick={() => onSelectJuz(juz.number)}
+                className={`group p-4 sm:p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer relative overflow-hidden flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-600 dark:border-emerald-600 ring-1 ring-emerald-600'
-                    : 'bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-850 hover:border-emerald-500/50 hover:shadow-md'
+                    ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-md ring-1 ring-emerald-500/30'
+                    : 'border-stone-200 dark:border-stone-850 bg-white dark:bg-stone-950 hover:border-emerald-500/60 hover:shadow-sm'
                 }`}
               >
-                {/* Top Row: Para Number Badge & Arabic Name */}
-                <div
-                  onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                  className="flex items-start justify-between gap-3 mb-3 cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${
-                        isSelected
-                          ? 'bg-emerald-800 text-white'
-                          : 'bg-stone-100 dark:bg-stone-900 text-stone-700 dark:text-stone-300 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950/80 group-hover:text-emerald-800 transition-colors'
-                      }`}
-                    >
-                      {juz.number}
+                <div>
+                  {/* Top Bar: Para Number & Arabic Calligraphy Name */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold font-mono transition-colors ${
+                          isSelected
+                            ? 'bg-emerald-800 text-white'
+                            : 'bg-stone-100 dark:bg-stone-900 text-stone-800 dark:text-stone-200 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950 group-hover:text-emerald-900'
+                        }`}
+                      >
+                        {juz.number}
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                          Para {juz.number}
+                        </span>
+                        <h3 className="font-semibold text-sm text-stone-900 dark:text-stone-100">
+                          {juz.transliteration}
+                        </h3>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold text-stone-900 dark:text-stone-100 block">
-                        Para {juz.number}
+
+                    <div className="text-right">
+                      <span className="font-arabic text-xl font-bold text-emerald-800 dark:text-emerald-400 block leading-tight" dir="rtl">
+                        {juz.arabicName}
                       </span>
-                      <span className="text-[11px] text-stone-500 dark:text-stone-400">
-                        {juz.transliteration}
+                      <span className="text-[11px] text-stone-500 font-arabic block">
+                        {juz.urduName}
                       </span>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <span className="font-arabic text-xl font-bold text-emerald-800 dark:text-emerald-400 block dir-rtl">
-                      {juz.arabicName}
-                    </span>
-                    <span className="text-[10px] text-stone-400 font-arabic">
-                      {juz.urduName}
-                    </span>
+                  {/* Range Description */}
+                  <div className="py-2.5 px-3 rounded-lg bg-stone-50 dark:bg-stone-900/60 border border-stone-100 dark:border-stone-850 text-xs text-stone-600 dark:text-stone-300 space-y-1 mb-3">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-stone-500">Starts:</span>
+                      <span className="font-medium truncate max-w-[170px] text-stone-800 dark:text-stone-200">
+                        {juz.startSurahName} ({juz.startAyah})
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-stone-500">Ends:</span>
+                      <span className="font-medium truncate max-w-[170px] text-stone-800 dark:text-stone-200">
+                        {juz.endSurahName} ({juz.endAyah})
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Middle: Surah Scope info */}
-                <div
-                  onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                  className="py-2.5 px-3 rounded-lg bg-stone-50 dark:bg-stone-900/60 border border-stone-100 dark:border-stone-850 text-xs space-y-1 mb-3 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between text-stone-600 dark:text-stone-400">
-                    <span className="text-[11px]">Surah Range:</span>
-                    <span className="font-medium text-stone-800 dark:text-stone-200 truncate ml-2">
-                      {juz.startSurahName} ({juz.startAyah}) → {juz.endSurahName} ({juz.endAyah})
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-stone-500 text-[11px]">
+                  <div className="flex items-center justify-between text-stone-500 text-[11px] mb-3">
                     <span>Total Verses:</span>
-                    <span className="font-mono">{juz.totalVerses} Ayahs</span>
+                    <span className="font-mono text-stone-700 dark:text-stone-300">{juz.totalVerses} Ayahs</span>
                   </div>
                 </div>
 
-                {/* Bottom Action strip: Read without audio vs Listen audio */}
-                <div className="flex items-center justify-between pt-2.5 border-t border-stone-100 dark:border-stone-850 text-xs gap-2">
-                  {/* Read Quran (Silent) */}
-                  <button
-                    onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                    className="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
-                    title="Read 30 Paras without listening / audio"
-                  >
-                    <BookMarked className="w-3.5 h-3.5" />
-                    <span>صرف پڑھیں (Read)</span>
-                  </button>
-
-                  {/* Listen Audio */}
-                  <button
-                    onClick={() => onSelectJuz(juz.number, 'reader')}
-                    className="py-1.5 px-2.5 rounded-lg bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium text-[11px] flex items-center justify-center gap-1.5 transition-colors"
-                    title="Listen with Tajweed audio recitation"
-                  >
-                    <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>سنیں (Audio)</span>
-                  </button>
+                {/* Bottom Action: Click to open Para & listen/recite with live highlight */}
+                <div className="pt-2.5 border-t border-stone-100 dark:border-stone-850 flex items-center justify-between text-xs">
+                  <span className="text-emerald-800 dark:text-emerald-400 font-bold text-[11px] flex items-center gap-1.5">
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span>تلاوت کھولیں اور سنیں</span>
+                  </span>
+                  <div className="flex items-center gap-1 text-emerald-700 font-semibold group-hover:translate-x-1 transition-transform">
+                    <span>کھولیں</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </div>
             );
@@ -182,7 +175,7 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
         </div>
       ) : (
         /* List View */
-        <div className="divide-y divide-stone-200 dark:divide-stone-800 border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden bg-white dark:bg-stone-950">
+        <div className="divide-y divide-stone-200 dark:divide-stone-850 border border-stone-200 dark:border-stone-850 rounded-xl overflow-hidden bg-white dark:bg-stone-950">
           {filteredJuz.map((juz) => {
             const isSelected = currentJuz === juz.number;
             const isCompleted = completedParas.includes(juz.number);
@@ -190,16 +183,14 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
             return (
               <div
                 key={juz.number}
-                className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+                onClick={() => onSelectJuz(juz.number)}
+                className={`p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors cursor-pointer ${
                   isSelected
                     ? 'bg-emerald-50/70 dark:bg-emerald-950/30'
                     : 'hover:bg-stone-50 dark:hover:bg-stone-900/50'
                 }`}
               >
-                <div
-                  onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                  className="flex items-center gap-4 min-w-0 flex-1 cursor-pointer"
-                >
+                <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div
                     className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold font-mono shrink-0 ${
                       isSelected
@@ -224,11 +215,8 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
-                  <div
-                    onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                    className="text-right cursor-pointer"
-                  >
+                <div className="flex items-center justify-between sm:justify-end gap-5 shrink-0">
+                  <div className="text-right">
                     <span className="font-arabic text-xl font-bold text-emerald-800 dark:text-emerald-400 block" dir="rtl">
                       {juz.arabicName}
                     </span>
@@ -237,25 +225,16 @@ export const JuzSelector: React.FC<JuzSelectorProps> = ({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onSelectJuz(juz.number, 'mushaf')}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-medium text-xs flex items-center gap-1.5 transition-colors"
-                      title="Read without listening"
-                    >
-                      <BookMarked className="w-3.5 h-3.5" />
-                      <span>Read</span>
-                    </button>
-
-                    <button
-                      onClick={() => onSelectJuz(juz.number, 'reader')}
-                      className="px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 text-stone-700 dark:text-stone-300 font-medium text-xs flex items-center gap-1.5 transition-colors"
-                      title="Listen with Audio"
-                    >
-                      <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Audio</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectJuz(juz.number);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-medium text-xs flex items-center gap-1.5 transition-colors shadow-2xs"
+                  >
+                    <Volume2 className="w-3.5 h-3.5" />
+                    <span>سنیں اور پڑھیں</span>
+                  </button>
                 </div>
               </div>
             );
